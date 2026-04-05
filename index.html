@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Value For Money Furniture</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400&family=Cormorant+Garamond:wght@300;400;500&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #f5f0e8;
+    --warm-white: #faf8f4;
+    --brown-dark: #2c1a0e;
+    --brown-mid: #6b3f1f;
+    --brown-light: #a0653a;
+    --gold: #c9a050;
+    --gold-light: #e8c97a;
+    --text-dark: #1e120a;
+    --text-mid: #5c3d25;
+    --text-light: #9a7255;
+    --shadow: rgba(44,26,14,0.15);
+    --cart-width: 380px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Jost', sans-serif;
+    background: var(--warm-white);
+    color: var(--text-dark);
+    overflow-x: hidden;
+  }
+
+  /* ── SCROLLBAR ── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--cream); }
+  ::-webkit-scrollbar-thumb { background: var(--brown-light); border-radius: 3px; }
+
+  /* ── LOADER ── */
+  #loader {
+    position: fixed; inset: 0; background: var(--brown-dark);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 9999; transition: opacity 0.6s ease, visibility 0.6s ease;
+  }
+  #loader.hidden { opacity: 0; visibility: hidden; }
+  .loader-text {
+    font-family: 'Playfair Display', serif;
+    color: var(--gold); font-size: clamp(1.4rem, 4vw, 2.2rem);
+    letter-spacing: 0.3em; animation: loaderPulse 1.2s ease infinite;
+  }
+  @keyframes loaderPulse {
+    0%,100% { opacity: 0.3; transform: scale(0.97); }
+    50% { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    padding: 0 5%;
+    display: flex; align-items: center; justify-content: space-between;
+    height: 72px;
+    background: rgba(250,248,244,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(169,101,58,0.12);
+    transition: box-shadow 0.3s;
+  }
+  nav.scrolled { box-shadow: 0 4px 30px var(--shadow); }
+
+  .nav-logo {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.25rem; font-weight: 800;
+    color: var(--brown-dark); text-decoration: none;
+    line-height: 1.2;
+  }
+  .nav-logo span { color: var(--gold); display: block; font-size: 0.65rem; font-weight: 400; letter-spacing: 0.25em; text-transform: uppercase; font-family: 'Jost', sans-serif; }
+
+  .nav-links { display: flex; align-items: center; gap: 2rem; list-style: none; }
+  .nav-links a { text-decoration: none; color: var(--text-mid); font-size: 0.85rem; letter-spacing: 0.08em; text-transform: uppercase; transition: color 0.3s; }
+  .nav-links a:hover { color: var(--gold); }
+
+  .nav-actions { display: flex; align-items: center; gap: 1rem; }
+
+  .cart-btn {
+    background: var(--brown-dark); color: var(--cream);
+    border: none; cursor: pointer;
+    padding: 0.55rem 1.2rem; border-radius: 2px;
+    font-family: 'Jost', sans-serif; font-size: 0.82rem; letter-spacing: 0.1em;
+    text-transform: uppercase; display: flex; align-items: center; gap: 0.5rem;
+    transition: background 0.3s;
+  }
+  .cart-btn:hover { background: var(--brown-mid); }
+  .cart-count {
+    background: var(--gold); color: var(--brown-dark);
+    border-radius: 50%; width: 20px; height: 20px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 0.72rem; font-weight: 700;
+    transition: transform 0.3s;
+  }
+  .cart-count.bump { animation: bump 0.3s ease; }
+  @keyframes bump { 0%,100%{transform:scale(1)} 50%{transform:scale(1.4)} }
+
+  .hamburger {
+    display: none; flex-direction: column; gap: 5px;
+    background: none; border: none; cursor: pointer; padding: 4px;
+  }
+  .hamburger span {
+    display: block; width: 24px; height: 2px;
+    background: var(--brown-dark); border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+  .hamburger.open span:nth-child(2) { opacity: 0; }
+  .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+  /* Mobile menu */
+  .mobile-menu {
+    display: none; position: fixed; top: 72px; left: 0; right: 0; bottom: 0;
+    background: var(--warm-white); z-index: 999; padding: 2rem 5%;
+    flex-direction: column; gap: 1.5rem;
+    transform: translateX(-100%); transition: transform 0.4s cubic-bezier(0.77,0,0.18,1);
+  }
+  .mobile-menu.open { transform: translateX(0); }
+  @media (max-width: 768px) {
+    .nav-links { display: none; }
+    .hamburger { display: flex; }
+    .mobile-menu { display: flex; }
+  }
+  .mobile-menu a {
+    text-decoration: none; color: var(--text-dark);
+    font-family: 'Playfair Display', serif; font-size: 1.6rem;
+    border-bottom: 1px solid rgba(169,101,58,0.15); padding-bottom: 1rem;
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100svh; padding-top: 72px;
+    display: flex; align-items: center;
+    background: linear-gradient(135deg, var(--brown-dark) 0%, #3d2412 55%, #5a3020 100%);
+    position: relative; overflow: hidden;
+  }
+  .hero-grain {
+    position: absolute; inset: 0; opacity: 0.04;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+  .hero-lines {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+  }
+  .hero-lines::before, .hero-lines::after {
+    content: ''; position: absolute;
+    border: 1px solid rgba(201,160,80,0.15);
+  }
+  .hero-lines::before { top: 12%; left: 6%; right: 6%; bottom: 12%; }
+  .hero-lines::after { top: 8%; left: 4%; right: 4%; bottom: 8%; border-color: rgba(201,160,80,0.07); }
+
+  .hero-content {
+    position: relative; z-index: 2; padding: 4rem 8%;
+    max-width: 800px;
+  }
+  .hero-tag {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    color: var(--gold-light); font-size: 0.75rem; letter-spacing: 0.35em;
+    text-transform: uppercase; margin-bottom: 1.5rem;
+    opacity: 0; transform: translateY(20px);
+    animation: fadeUp 0.8s ease 0.3s forwards;
+  }
+  .hero-tag::before { content: ''; width: 28px; height: 1px; background: var(--gold); }
+
+  .hero-h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.8rem, 7vw, 5.5rem);
+    color: var(--cream); line-height: 1.05; font-weight: 800;
+    opacity: 0; transform: translateY(30px);
+    animation: fadeUp 0.9s ease 0.5s forwards;
+  }
+  .hero-h1 em { color: var(--gold); font-style: italic; }
+
+  .hero-sub {
+    margin-top: 1.5rem; color: rgba(245,240,232,0.65);
+    font-family: 'Cormorant Garamond', serif; font-size: 1.15rem;
+    max-width: 480px; line-height: 1.7;
+    opacity: 0; transform: translateY(20px);
+    animation: fadeUp 0.8s ease 0.75s forwards;
+  }
+
+  .hero-ctas {
+    margin-top: 2.5rem; display: flex; flex-wrap: wrap; gap: 1rem;
+    opacity: 0; transform: translateY(20px);
+    animation: fadeUp 0.8s ease 1s forwards;
+  }
+  .btn-primary {
+    padding: 0.85rem 2rem; background: var(--gold);
+    color: var(--brown-dark); border: none; cursor: pointer;
+    font-family: 'Jost', sans-serif; font-size: 0.85rem;
+    font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase;
+    border-radius: 2px; text-decoration: none;
+    transition: background 0.3s, transform 0.2s;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+  .btn-outline {
+    padding: 0.85rem 2rem; background: transparent;
+    color: var(--cream); border: 1px solid rgba(245,240,232,0.35);
+    cursor: pointer; font-family: 'Jost', sans-serif; font-size: 0.85rem;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    border-radius: 2px; text-decoration: none;
+    transition: border-color 0.3s, background 0.3s;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+  }
+  .btn-outline:hover { border-color: var(--gold); background: rgba(201,160,80,0.1); }
+
+  .hero-badge {
+    position: absolute; right: 8%; top: 50%; transform: translateY(-50%);
+    width: 160px; height: 160px;
+    border: 1px solid rgba(201,160,80,0.3); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    animation: rotateBadge 18s linear infinite;
+    opacity: 0; animation-delay: 1.2s; animation-fill-mode: forwards;
+  }
+  @media (max-width: 900px) { .hero-badge { display: none; } }
+  @keyframes rotateBadge {
+    0% { opacity: 0; transform: translateY(-50%) rotate(0deg); }
+    10% { opacity: 1; }
+    100% { opacity: 1; transform: translateY(-50%) rotate(360deg); }
+  }
+  .hero-badge svg { width: 100%; height: 100%; }
+  .hero-badge-center {
+    position: absolute; font-family: 'Playfair Display', serif;
+    color: var(--gold); text-align: center; font-size: 1rem;
+  }
+  .hero-badge-center span { display: block; font-size: 1.6rem; font-weight: 800; }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ── SECTION COMMONS ── */
+  section { padding: 5rem 8%; }
+
+  .section-tag {
+    font-size: 0.72rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--gold); display: flex; align-items: center; gap: 0.6rem;
+    margin-bottom: 0.8rem;
+  }
+  .section-tag::before { content: ''; width: 24px; height: 1px; background: var(--gold); }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(1.8rem, 4vw, 3rem);
+    color: var(--brown-dark); line-height: 1.15;
+  }
+
+  /* ── STATS STRIP ── */
+  .stats-strip {
+    background: var(--brown-dark); padding: 3rem 8%;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    gap: 2rem; text-align: center;
+  }
+  @media (max-width: 640px) { .stats-strip { grid-template-columns: repeat(2,1fr); } }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem; color: var(--gold); font-weight: 800;
+  }
+  .stat-label {
+    color: rgba(245,240,232,0.6); font-size: 0.8rem;
+    letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.3rem;
+  }
+
+  /* ── PRODUCTS ── */
+  #products { background: var(--cream); }
+
+  .products-header {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    flex-wrap: wrap; gap: 1rem; margin-bottom: 3rem;
+  }
+
+  .filter-tabs {
+    display: flex; gap: 0.5rem; flex-wrap: wrap; margin-top: 1.5rem;
+  }
+  .filter-btn {
+    padding: 0.45rem 1.1rem; border: 1px solid rgba(160,101,58,0.3);
+    background: transparent; cursor: pointer;
+    font-family: 'Jost', sans-serif; font-size: 0.78rem;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    color: var(--text-mid); border-radius: 2px;
+    transition: all 0.3s;
+  }
+  .filter-btn.active, .filter-btn:hover {
+    background: var(--brown-dark); color: var(--cream); border-color: var(--brown-dark);
+  }
+
+  .products-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(min(280px, 100%), 1fr));
+    gap: 1.8rem;
+  }
+
+  .product-card {
+    background: var(--warm-white); border-radius: 4px; overflow: hidden;
+    box-shadow: 0 2px 20px var(--shadow);
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.4s;
+    opacity: 0; transform: translateY(40px);
+  }
+  .product-card.visible { animation: cardReveal 0.6s cubic-bezier(0.34,1.56,0.64,1) forwards; }
+  @keyframes cardReveal {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .product-card:hover { transform: translateY(-8px); box-shadow: 0 20px 50px var(--shadow); }
+
+  .product-img-wrap {
+    position: relative; overflow: hidden; aspect-ratio: 4/3; cursor: pointer;
+  }
+  .product-img-wrap img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+  }
+  .product-card:hover .product-img-wrap img { transform: scale(1.08); }
+  .product-badge {
+    position: absolute; top: 12px; left: 12px;
+    background: var(--gold); color: var(--brown-dark);
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0.25rem 0.6rem; border-radius: 2px;
+  }
+  .product-overlay {
+    position: absolute; inset: 0; background: rgba(44,26,14,0.55);
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  .product-img-wrap:hover .product-overlay { opacity: 1; }
+  .quick-view-btn {
+    background: var(--cream); color: var(--brown-dark);
+    border: none; cursor: pointer; padding: 0.65rem 1.4rem;
+    font-family: 'Jost', sans-serif; font-size: 0.78rem;
+    letter-spacing: 0.1em; text-transform: uppercase; border-radius: 2px;
+    transition: background 0.2s;
+  }
+  .quick-view-btn:hover { background: var(--gold); }
+
+  .product-info { padding: 1.2rem 1.4rem 1.6rem; }
+  .product-category {
+    font-size: 0.68rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--text-light); margin-bottom: 0.4rem;
+  }
+  .product-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem; color: var(--brown-dark); margin-bottom: 0.5rem;
+  }
+  .product-price {
+    display: flex; align-items: center; gap: 0.7rem; margin-bottom: 1rem;
+  }
+  .price-now { font-size: 1.2rem; font-weight: 600; color: var(--brown-mid); }
+  .price-old { font-size: 0.9rem; color: var(--text-light); text-decoration: line-through; }
+  .price-save { font-size: 0.72rem; color: #2d8a50; font-weight: 600; }
+
+  .product-actions { display: flex; gap: 0.6rem; }
+  .add-cart-btn {
+    flex: 1; padding: 0.7rem;
+    background: var(--brown-dark); color: var(--cream);
+    border: none; cursor: pointer;
+    font-family: 'Jost', sans-serif; font-size: 0.8rem;
+    letter-spacing: 0.08em; text-transform: uppercase; border-radius: 2px;
+    transition: background 0.3s, transform 0.2s;
+    display: flex; align-items: center; justify-content: center; gap: 0.4rem;
+  }
+  .add-cart-btn:hover { background: var(--brown-mid); transform: scale(1.02); }
+  .add-cart-btn:active { transform: scale(0.97); }
+  .wish-btn {
+    width: 42px; height: 42px; border: 1px solid rgba(160,101,58,0.3);
+    background: transparent; cursor: pointer; border-radius: 2px;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--text-light); transition: all 0.3s;
+    font-size: 1rem;
+  }
+  .wish-btn:hover, .wish-btn.active { background: #fce8e8; border-color: #e06060; color: #e06060; }
+
+  /* ── GALLERY ── */
+  #gallery { background: var(--warm-white); }
+
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: 140px;
+    gap: 12px; margin-top: 2.5rem;
+  }
+  .gallery-item { overflow: hidden; border-radius: 3px; cursor: pointer; position: relative; }
+  .gallery-item:nth-child(1) { grid-column: span 5; grid-row: span 3; }
+  .gallery-item:nth-child(2) { grid-column: span 4; grid-row: span 2; }
+  .gallery-item:nth-child(3) { grid-column: span 3; grid-row: span 2; }
+  .gallery-item:nth-child(4) { grid-column: span 4; grid-row: span 2; }
+  .gallery-item:nth-child(5) { grid-column: span 3; grid-row: span 1; }
+  .gallery-item:nth-child(6) { grid-column: span 7; grid-row: span 2; }
+  .gallery-item:nth-child(7) { grid-column: span 5; grid-row: span 2; }
+  @media (max-width: 640px) {
+    .gallery-grid { grid-template-columns: 1fr 1fr; grid-auto-rows: 150px; }
+    .gallery-item { grid-column: span 1 !important; grid-row: span 1 !important; }
+  }
+
+  .gallery-item img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25,0.46,0.45,0.94);
+  }
+  .gallery-item:hover img { transform: scale(1.12); }
+  .gallery-item-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(44,26,14,0.7) 0%, transparent 60%);
+    opacity: 0; transition: opacity 0.3s;
+    display: flex; align-items: flex-end; padding: 1rem;
+    color: var(--cream); font-family: 'Playfair Display', serif; font-size: 0.95rem;
+  }
+  .gallery-item:hover .gallery-item-overlay { opacity: 1; }
+
+  /* Lightbox */
+  #lightbox {
+    position: fixed; inset: 0; background: rgba(20,10,5,0.95);
+    z-index: 9000; display: none; align-items: center; justify-content: center;
+    padding: 5%;
+  }
+  #lightbox.open { display: flex; animation: fadeIn 0.3s ease; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  #lightbox img {
+    max-width: 100%; max-height: 90vh; border-radius: 4px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+    animation: zoomIn 0.3s ease;
+  }
+  @keyframes zoomIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+  .lightbox-close {
+    position: absolute; top: 1.5rem; right: 2rem;
+    background: none; border: none; color: var(--cream);
+    font-size: 2rem; cursor: pointer; line-height: 1;
+    transition: color 0.2s;
+  }
+  .lightbox-close:hover { color: var(--gold); }
+  .lightbox-nav {
+    position: absolute; top: 50%; transform: translateY(-50%);
+    background: rgba(245,240,232,0.15); border: none;
+    color: var(--cream); font-size: 1.5rem; cursor: pointer;
+    width: 50px; height: 50px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+  }
+  .lightbox-nav:hover { background: rgba(201,160,80,0.4); }
+  #lb-prev { left: 1.5rem; }
+  #lb-next { right: 1.5rem; }
+
+  /* ── WHY US ── */
+  #why { background: var(--cream); }
+  .why-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 2rem; margin-top: 3rem;
+  }
+  .why-card {
+    padding: 2rem; background: var(--warm-white);
+    border-radius: 4px; border-top: 3px solid var(--gold);
+    transition: transform 0.3s, box-shadow 0.3s;
+    opacity: 0; transform: translateY(30px);
+  }
+  .why-card.visible { animation: cardReveal 0.6s ease forwards; }
+  .why-card:hover { transform: translateY(-6px); box-shadow: 0 15px 40px var(--shadow); }
+  .why-icon { font-size: 2rem; margin-bottom: 1rem; }
+  .why-title { font-family: 'Playfair Display', serif; font-size: 1.1rem; color: var(--brown-dark); margin-bottom: 0.5rem; }
+  .why-text { color: var(--text-light); font-size: 0.88rem; line-height: 1.7; }
+
+  /* ── TESTIMONIALS ── */
+  #testimonials { background: var(--brown-dark); overflow: hidden; }
+  #testimonials .section-title { color: var(--cream); }
+  #testimonials .section-tag { color: var(--gold-light); }
+  #testimonials .section-tag::before { background: var(--gold-light); }
+
+  .testimonials-track-wrap { overflow: hidden; margin-top: 3rem; }
+  .testimonials-track {
+    display: flex; gap: 1.5rem;
+    animation: scrollTrack 25s linear infinite;
+    width: max-content;
+  }
+  .testimonials-track:hover { animation-play-state: paused; }
+  @keyframes scrollTrack {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .testimonial-card {
+    min-width: 300px; max-width: 300px;
+    background: rgba(245,240,232,0.06); border: 1px solid rgba(201,160,80,0.15);
+    border-radius: 4px; padding: 1.8rem;
+  }
+  .testimonial-stars { color: var(--gold); margin-bottom: 0.8rem; letter-spacing: 2px; }
+  .testimonial-text { color: rgba(245,240,232,0.8); font-family: 'Cormorant Garamond', serif; font-size: 1rem; line-height: 1.7; margin-bottom: 1.2rem; }
+  .testimonial-author { display: flex; align-items: center; gap: 0.8rem; }
+  .testimonial-avatar {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--brown-light), var(--gold));
+    display: flex; align-items: center; justify-content: center;
+    color: var(--cream); font-weight: 700; font-size: 0.9rem;
+  }
+  .testimonial-name { color: var(--cream); font-size: 0.85rem; font-weight: 500; }
+  .testimonial-loc { color: rgba(245,240,232,0.45); font-size: 0.75rem; }
+
+  /* ── CONTACT ── */
+  #contact { background: var(--warm-white); }
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 4rem;
+    margin-top: 3rem;
+  }
+  @media (max-width: 768px) { .contact-grid { grid-template-columns: 1fr; gap: 2rem; } }
+  .contact-info h3 {
+    font-family: 'Playfair Display', serif; font-size: 1.6rem;
+    color: var(--brown-dark); margin-bottom: 1.5rem;
+  }
+  .contact-detail {
+    display: flex; align-items: flex-start; gap: 1rem;
+    margin-bottom: 1.2rem; padding: 1rem;
+    background: var(--cream); border-radius: 4px;
+  }
+  .contact-detail-icon { font-size: 1.2rem; flex-shrink: 0; margin-top: 2px; }
+  .contact-detail-label { font-size: 0.72rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--text-light); }
+  .contact-detail-val { color: var(--text-dark); font-size: 0.92rem; margin-top: 0.2rem; }
+
+  .wa-cta-box {
+    background: linear-gradient(135deg, #128c7e, #075e54);
+    border-radius: 8px; padding: 2rem; color: white; text-align: center;
+    margin-top: 2rem;
+  }
+  .wa-cta-box h4 { font-family: 'Playfair Display', serif; font-size: 1.3rem; margin-bottom: 0.5rem; }
+  .wa-cta-box p { opacity: 0.8; font-size: 0.88rem; margin-bottom: 1.2rem; }
+  .wa-cta-btn {
+    display: inline-flex; align-items: center; gap: 0.6rem;
+    background: white; color: #075e54;
+    padding: 0.8rem 2rem; border-radius: 4px;
+    font-family: 'Jost', sans-serif; font-weight: 600;
+    text-decoration: none; font-size: 0.9rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .wa-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,0.2); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--brown-dark); padding: 4rem 8% 2rem;
+    color: rgba(245,240,232,0.65);
+  }
+  .footer-top {
+    display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem;
+    padding-bottom: 3rem; border-bottom: 1px solid rgba(201,160,80,0.15);
+  }
+  @media (max-width: 640px) { .footer-top { grid-template-columns: 1fr; gap: 2rem; } }
+  .footer-brand-name {
+    font-family: 'Playfair Display', serif; font-size: 1.4rem;
+    color: var(--cream); margin-bottom: 1rem;
+  }
+  .footer-brand-name span { color: var(--gold); }
+  .footer-desc { font-size: 0.85rem; line-height: 1.8; max-width: 280px; }
+  .footer-h { color: var(--cream); font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.2rem; }
+  .footer-links { list-style: none; display: flex; flex-direction: column; gap: 0.7rem; }
+  .footer-links a { color: rgba(245,240,232,0.55); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+  .footer-links a:hover { color: var(--gold); }
+  .footer-bottom {
+    padding-top: 1.5rem; display: flex; justify-content: space-between;
+    align-items: center; flex-wrap: wrap; gap: 1rem; font-size: 0.78rem;
+  }
+  .footer-bottom a { color: var(--gold); text-decoration: none; }
+
+  /* ── WHATSAPP FLOAT ── */
+  #wa-float {
+    position: fixed; bottom: 1.8rem; right: 1.8rem; z-index: 800;
+  }
+  .wa-float-btn {
+    width: 58px; height: 58px; border-radius: 50%;
+    background: #25d366; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 6px 25px rgba(37,211,102,0.45);
+    transition: transform 0.3s, box-shadow 0.3s;
+    animation: waPulse 2.5s ease-in-out infinite;
+  }
+  @keyframes waPulse {
+    0%,100% { box-shadow: 0 6px 25px rgba(37,211,102,0.45); }
+    50% { box-shadow: 0 6px 35px rgba(37,211,102,0.75), 0 0 0 10px rgba(37,211,102,0.1); }
+  }
+  .wa-float-btn:hover { transform: scale(1.12); }
+  .wa-float-btn svg { width: 30px; height: 30px; fill: white; }
+  .wa-tooltip {
+    position: absolute; right: 70px; top: 50%; transform: translateY(-50%);
+    background: var(--brown-dark); color: var(--cream);
+    font-size: 0.78rem; padding: 0.45rem 0.9rem; border-radius: 4px;
+    white-space: nowrap; pointer-events: none;
+    opacity: 0; transition: opacity 0.3s;
+  }
+  #wa-float:hover .wa-tooltip { opacity: 1; }
+  .wa-tooltip::after {
+    content: ''; position: absolute; right: -6px; top: 50%; transform: translateY(-50%);
+    border: 6px solid transparent; border-right: none;
+    border-left-color: var(--brown-dark);
+  }
+
+  /* ── CART DRAWER ── */
+  #cart-overlay {
+    position: fixed; inset: 0; background: rgba(20,10,5,0.5);
+    z-index: 1500; display: none;
+  }
+  #cart-overlay.open { display: block; animation: fadeIn 0.3s ease; }
+  #cart-drawer {
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: min(var(--cart-width), 100vw);
+    background: var(--warm-white); z-index: 1600;
+    transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.77,0,0.18,1);
+    display: flex; flex-direction: column;
+  }
+  #cart-drawer.open { transform: translateX(0); }
+  .cart-header {
+    padding: 1.5rem; border-bottom: 1px solid rgba(160,101,58,0.15);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .cart-header h3 {
+    font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--brown-dark);
+  }
+  .cart-close {
+    background: none; border: none; font-size: 1.5rem; cursor: pointer;
+    color: var(--text-mid); transition: color 0.2s;
+  }
+  .cart-close:hover { color: var(--brown-dark); }
+  .cart-items { flex: 1; overflow-y: auto; padding: 1rem 1.5rem; }
+  .cart-empty {
+    text-align: center; padding: 3rem 1rem;
+    color: var(--text-light);
+  }
+  .cart-empty-icon { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; }
+  .cart-empty p { font-family: 'Cormorant Garamond', serif; font-size: 1.1rem; }
+  .cart-item {
+    display: flex; gap: 1rem; padding: 1rem 0;
+    border-bottom: 1px solid rgba(160,101,58,0.1);
+    animation: cartItemIn 0.3s ease;
+  }
+  @keyframes cartItemIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+  .cart-item-img {
+    width: 72px; height: 72px; border-radius: 3px; object-fit: cover; flex-shrink: 0;
+  }
+  .cart-item-details { flex: 1; }
+  .cart-item-name { font-family: 'Playfair Display', serif; font-size: 0.95rem; color: var(--brown-dark); }
+  .cart-item-price { color: var(--brown-mid); font-size: 0.88rem; margin-top: 0.2rem; }
+  .cart-item-controls { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
+  .qty-btn {
+    width: 26px; height: 26px; border: 1px solid rgba(160,101,58,0.3);
+    background: none; cursor: pointer; border-radius: 2px;
+    font-size: 0.9rem; color: var(--text-mid);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .qty-btn:hover { background: var(--brown-dark); color: var(--cream); border-color: var(--brown-dark); }
+  .qty-val { font-size: 0.88rem; min-width: 24px; text-align: center; }
+  .remove-item { background: none; border: none; cursor: pointer; color: #c0605a; font-size: 0.78rem; margin-left: auto; opacity: 0.7; transition: opacity 0.2s; }
+  .remove-item:hover { opacity: 1; }
+
+  .cart-footer {
+    padding: 1.5rem; border-top: 1px solid rgba(160,101,58,0.15);
+  }
+  .cart-subtotal {
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: 'Playfair Display', serif; font-size: 1.1rem;
+    color: var(--brown-dark); margin-bottom: 1.2rem;
+  }
+  .cart-subtotal span:last-child { color: var(--brown-mid); }
+  .checkout-wa-btn {
+    width: 100%; padding: 1rem;
+    background: #128c7e; color: white;
+    border: none; cursor: pointer; border-radius: 4px;
+    font-family: 'Jost', sans-serif; font-size: 0.9rem;
+    font-weight: 500; letter-spacing: 0.05em;
+    display: flex; align-items: center; justify-content: center; gap: 0.6rem;
+    transition: background 0.3s;
+  }
+  .checkout-wa-btn:hover { background: #075e54; }
+
+  /* ── ANIMATIONS OBSERVE ── */
+  .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .fade-up.visible { opacity: 1; transform: translateY(0); }
+
+  /* ── TOAST ── */
+  #toast {
+    position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--brown-dark); color: var(--cream);
+    padding: 0.8rem 1.8rem; border-radius: 30px;
+    font-size: 0.85rem; z-index: 5000;
+    transition: transform 0.4s cubic-bezier(0.34,1.56,0.64,1), opacity 0.4s;
+    opacity: 0; display: flex; align-items: center; gap: 0.5rem;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.25);
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+  /* ── UTILITY ── */
+  .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); }
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader"><div class="loader-text">Value For Money Furniture</div></div>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#" class="nav-logo">VFM Furniture<span>Quality · Comfort · Value</span></a>
+  <ul class="nav-links">
+    <li><a href="#products">Shop</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#why">Why Us</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <div class="nav-actions">
+    <button class="cart-btn" onclick="openCart()" aria-label="Open cart">
+      🛒 Cart <span class="cart-count" id="cartCount">0</span>
+    </button>
+    <button class="hamburger" id="hamburger" aria-label="Menu" onclick="toggleMobile()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#products" onclick="closeMobile()">Shop</a>
+  <a href="#gallery" onclick="closeMobile()">Gallery</a>
+  <a href="#why" onclick="closeMobile()">Why Us</a>
+  <a href="#testimonials" onclick="closeMobile()">Reviews</a>
+  <a href="#contact" onclick="closeMobile()">Contact</a>
+  <a href="https://wa.me/918800619500" target="_blank" style="color:#128c7e">💬 WhatsApp Us</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-grain"></div>
+  <div class="hero-lines"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Premium Furniture Store</div>
+    <h1 class="hero-h1">Furnish Your<br><em>Dream Home</em><br>For Less</h1>
+    <p class="hero-sub">Exceptional quality furniture that doesn't break the bank. From elegant sofas to sturdy dining sets — crafted for life.</p>
+    <div class="hero-ctas">
+      <a href="#products" class="btn-primary">🛋️ Shop Now</a>
+      <a href="https://wa.me/918800619500?text=Hi!%20I%20want%20to%20enquire%20about%20furniture." target="_blank" class="btn-outline">💬 WhatsApp Us</a>
+    </div>
+  </div>
+  <div class="hero-badge">
+    <svg viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+      <defs><path id="circle" d="M 80,80 m -55,0 a 55,55 0 1,1 110,0 a 55,55 0 1,1 -110,0"/></defs>
+      <text fill="#c9a050" font-size="12" font-family="Jost,sans-serif" letter-spacing="3">
+        <textPath href="#circle">VALUE FOR MONEY • QUALITY FURNITURE • EST. 2010 •</textPath>
+      </text>
+    </svg>
+    <div class="hero-badge-center"><span>20+</span>Years</div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats-strip">
+  <div><div class="stat-num" data-target="5000">0</div><div class="stat-label">Happy Customers</div></div>
+  <div><div class="stat-num" data-target="200">0</div><div class="stat-label">Products</div></div>
+  <div><div class="stat-num" data-target="20">0</div><div class="stat-label">Years Experience</div></div>
+  <div><div class="stat-num" data-target="4">0</div><div class="stat-label">Showroom Locations</div></div>
+</div>
+
+<!-- PRODUCTS -->
+<section id="products">
+  <div class="products-header">
+    <div>
+      <div class="section-tag">Our Collection</div>
+      <h2 class="section-title">Shop By Category</h2>
+      <div class="filter-tabs">
+        <button class="filter-btn active" onclick="filterProducts('all',this)">All</button>
+        <button class="filter-btn" onclick="filterProducts('sofa',this)">Sofas</button>
+        <button class="filter-btn" onclick="filterProducts('bed',this)">Beds</button>
+        <button class="filter-btn" onclick="filterProducts('dining',this)">Dining</button>
+        <button class="filter-btn" onclick="filterProducts('wardrobe',this)">Wardrobes</button>
+        <button class="filter-btn" onclick="filterProducts('office',this)">Office</button>
+      </div>
+    </div>
+  </div>
+  <div class="products-grid" id="productsGrid"></div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="section-tag">Our Showroom</div>
+  <h2 class="section-title">Crafted With Care</h2>
+  <div class="gallery-grid" id="galleryGrid"></div>
+</section>
+
+<!-- WHY US -->
+<section id="why">
+  <div class="section-tag">Why Choose Us</div>
+  <h2 class="section-title">The VFM Promise</h2>
+  <div class="why-grid">
+    <div class="why-card"><div class="why-icon">🏆</div><div class="why-title">Unbeatable Quality</div><div class="why-text">Premium hardwood and fabric sourced from certified suppliers for furniture that lasts decades.</div></div>
+    <div class="why-card"><div class="why-icon">💰</div><div class="why-title">Best Prices Guaranteed</div><div class="why-text">We match or beat any competitor's price. Quality furniture doesn't have to cost a fortune.</div></div>
+    <div class="why-card"><div class="why-icon">🚚</div><div class="why-title">Free Home Delivery</div><div class="why-text">Free delivery and professional assembly on all orders above ₹15,000 within city limits.</div></div>
+    <div class="why-card"><div class="why-icon">🔄</div><div class="why-title">Easy Returns</div><div class="why-text">Not satisfied? Return within 30 days, no questions asked. Your happiness is our priority.</div></div>
+    <div class="why-card"><div class="why-icon">🛡️</div><div class="why-title">5-Year Warranty</div><div class="why-text">Comprehensive warranty on all products. We stand behind every piece of furniture we sell.</div></div>
+    <div class="why-card"><div class="why-icon">💬</div><div class="why-title">WhatsApp Support</div><div class="why-text">Got questions? Chat with us instantly on WhatsApp. Quick answers, real people, zero bots.</div></div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="section-tag">Customer Stories</div>
+  <h2 class="section-title" style="color:var(--cream)">What Our Customers Say</h2>
+  <div class="testimonials-track-wrap">
+    <div class="testimonials-track" id="testimonialsTrack"></div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-tag">Get In Touch</div>
+  <h2 class="section-title">Visit Us or WhatsApp</h2>
+  <div class="contact-grid">
+    <div class="contact-info">
+      <h3>We'd love to hear from you</h3>
+      <div class="contact-detail">
+        <div class="contact-detail-icon">📍</div>
+        <div><div class="contact-detail-label">Showroom</div><div class="contact-detail-val">Main Market, Sector 14, Gurugram, Haryana</div></div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-detail-icon">📞</div>
+        <div><div class="contact-detail-label">Phone</div><div class="contact-detail-val"><a href="tel:08800619500" style="color:var(--brown-mid);text-decoration:none">088006 19500</a></div></div>
+      </div>
+      <div class="contact-detail">
+        <div class="contact-detail-icon">🕐</div>
+        <div><div class="contact-detail-label">Hours</div><div class="contact-detail-val">Mon–Sat: 10am – 8pm<br>Sunday: 11am – 6pm</div></div>
+      </div>
+    </div>
+    <div>
+      <div class="wa-cta-box">
+        <div style="font-size:2.5rem;margin-bottom:0.5rem">💬</div>
+        <h4>Chat With Us on WhatsApp</h4>
+        <p>Get instant quotes, check availability, and place orders right from WhatsApp</p>
+        <a href="https://wa.me/918800619500?text=Hi!%20I%20am%20interested%20in%20your%20furniture.%20Can%20you%20help%20me%3F" target="_blank" class="wa-cta-btn">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="#128c7e"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+          Start WhatsApp Chat
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-brand-name">Value For Money <span>Furniture</span></div>
+      <p class="footer-desc">Premium furniture at honest prices. Serving happy homes across Gurugram and NCR since 2004. Quality you can feel, prices you'll love.</p>
+    </div>
+    <div>
+      <div class="footer-h">Quick Links</div>
+      <ul class="footer-links">
+        <li><a href="#products">Shop All</a></li>
+        <li><a href="#gallery">Gallery</a></li>
+        <li><a href="#why">Why Us</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-h">Categories</div>
+      <ul class="footer-links">
+        <li><a href="#products">Sofas & Sectionals</a></li>
+        <li><a href="#products">Beds & Mattresses</a></li>
+        <li><a href="#products">Dining Sets</a></li>
+        <li><a href="#products">Wardrobes</a></li>
+        <li><a href="#products">Office Furniture</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 Value For Money Furniture. All rights reserved.</span>
+    <span>Made with ❤️ in India | <a href="https://wa.me/918800619500">WhatsApp: 088006 19500</a></span>
+  </div>
+</footer>
+
+<!-- WHATSAPP FLOAT -->
+<div id="wa-float">
+  <div class="wa-tooltip">Chat with us!</div>
+  <a href="https://wa.me/918800619500?text=Hi!%20I%20want%20to%20know%20more%20about%20your%20furniture." target="_blank" aria-label="WhatsApp">
+    <button class="wa-float-btn">
+      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+    </button>
+  </a>
+</div>
+
+<!-- CART OVERLAY -->
+<div id="cart-overlay" onclick="closeCart()"></div>
+
+<!-- CART DRAWER -->
+<div id="cart-drawer">
+  <div class="cart-header">
+    <h3>🛒 Your Cart (<span id="cartItemCount">0</span> items)</h3>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">🛋️</div>
+      <p>Your cart is empty.<br>Add some beautiful furniture!</p>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-subtotal">
+      <span>Subtotal</span>
+      <span id="cartSubtotal">₹0</span>
+    </div>
+    <button class="checkout-wa-btn" onclick="checkoutWhatsApp()">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+      Order via WhatsApp
+    </button>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <button class="lightbox-nav" id="lb-prev" onclick="lbNav(-1)">‹</button>
+  <img id="lightbox-img" src="" alt="Gallery image">
+  <button class="lightbox-nav" id="lb-next" onclick="lbNav(1)">›</button>
+</div>
+
+<!-- TOAST -->
+<div id="toast">✅ Added to cart!</div>
+
+<script>
+// ── DATA ──
+const WA_NUM = '918800619500';
+
+const PRODUCTS = [
+  { id:1, name:'Venetian 3-Seater Sofa', category:'sofa', price:28999, oldPrice:38000, img:'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80', badge:'Bestseller' },
+  { id:2, name:'Royal King Bed Frame', category:'bed', price:22500, oldPrice:30000, img:'https://images.unsplash.com/photo-1505693314120-0d443867891c?w=600&q=80', badge:'New' },
+  { id:3, name:'Teak Dining Table Set', category:'dining', price:34000, oldPrice:45000, img:'https://images.unsplash.com/photo-1617104678098-de229db51175?w=600&q=80', badge:'Popular' },
+  { id:4, name:'Milano L-Shaped Sofa', category:'sofa', price:42000, oldPrice:58000, img:'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=600&q=80', badge:'Sale' },
+  { id:5, name:'Executive Wardrobe', category:'wardrobe', price:19500, oldPrice:26000, img:'https://images.unsplash.com/photo-1558997519-83ea9252edf8?w=600&q=80', badge:'' },
+  { id:6, name:'Office Ergonomic Desk', category:'office', price:11999, oldPrice:16000, img:'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&q=80', badge:'New' },
+  { id:7, name:'Bunk Bed Kids Set', category:'bed', price:17500, oldPrice:23000, img:'https://images.unsplash.com/photo-1568376794508-ae52c6ab3929?w=600&q=80', badge:'' },
+  { id:8, name:'6-Chair Dining Set', category:'dining', price:52000, oldPrice:70000, img:'https://images.unsplash.com/photo-1604578762246-41134e37f9cc?w=600&q=80', badge:'Sale' },
+];
+
+const GALLERY_IMGS = [
+  { src:'https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&q=80', label:'Living Room Collection' },
+  { src:'https://images.unsplash.com/photo-1484101403633-562f891dc89a?w=600&q=80', label:'Master Bedroom' },
+  { src:'https://images.unsplash.com/photo-1616137466211-f939a420be84?w=500&q=80', label:'Dining Area' },
+  { src:'https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80', label:'Sofa Range' },
+  { src:'https://images.unsplash.com/photo-1577972017003-d6cc1f50d90f?w=500&q=80', label:'Office Setup' },
+  { src:'https://images.unsplash.com/photo-1617806118233-18e1de247200?w=700&q=80', label:'Wardrobe Collection' },
+  { src:'https://images.unsplash.com/photo-1600121848594-d8644e57abab?w=600&q=80', label:'Study Corner' },
+];
+
+const TESTIMONIALS = [
+  { name:'Priya Sharma', loc:'Gurugram', stars:5, text:'Bought a sofa set for my new home. The quality is outstanding and delivery was on time. Highly recommend!' },
+  { name:'Rahul Verma', loc:'Delhi', stars:5, text:'Best furniture store in NCR hands down. Got a dining set that my whole family loves. Great value!' },
+  { name:'Sunita Patel', loc:'Noida', stars:5, text:'The WhatsApp service is so convenient. Placed my order in minutes and the team was super helpful.' },
+  { name:'Amit Kumar', loc:'Faridabad', stars:4, text:'Quality furniture at reasonable prices. The wardrobe I bought is solid and beautiful.' },
+  { name:'Meena Gupta', loc:'Ghaziabad', stars:5, text:'Superb experience! The bed frame is exactly as shown. Assembly team was professional and quick.' },
+  { name:'Vijay Singh', loc:'Gurugram', stars:5, text:'5 years and my furniture still looks brand new. The 5-year warranty gave me peace of mind.' },
+];
+
+// ── STATE ──
+let cart = [];
+let lbIndex = 0;
+let currentFilter = 'all';
+
+// ── LOADER ──
+window.addEventListener('load', () => {
+  setTimeout(() => document.getElementById('loader').classList.add('hidden'), 1200);
+});
+
+// ── NAV SCROLL ──
+window.addEventListener('scroll', () => {
+  document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// ── MOBILE MENU ──
+function toggleMobile() {
+  const h = document.getElementById('hamburger');
+  const m = document.getElementById('mobileMenu');
+  h.classList.toggle('open'); m.classList.toggle('open');
+}
+function closeMobile() {
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
+// ── RENDER PRODUCTS ──
+function renderProducts(filter) {
+  const grid = document.getElementById('productsGrid');
+  grid.innerHTML = '';
+  const list = filter === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.category === filter);
+  list.forEach((p, i) => {
+    const save = Math.round((1 - p.price / p.oldPrice) * 100);
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.style.animationDelay = (i * 0.08) + 's';
+    card.innerHTML = `
+      <div class="product-img-wrap" onclick="openLightboxProduct('${p.img}')">
+        <img src="${p.img}" alt="${p.name}" loading="lazy">
+        ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
+        <div class="product-overlay"><button class="quick-view-btn">Quick View</button></div>
+      </div>
+      <div class="product-info">
+        <div class="product-category">${p.category}</div>
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">
+          <span class="price-now">₹${p.price.toLocaleString('en-IN')}</span>
+          <span class="price-old">₹${p.oldPrice.toLocaleString('en-IN')}</span>
+          <span class="price-save">Save ${save}%</span>
+        </div>
+        <div class="product-actions">
+          <button class="add-cart-btn" onclick="addToCart(${p.id})">🛒 Add to Cart</button>
+          <button class="wish-btn" onclick="toggleWish(this)" aria-label="Wishlist">♡</button>
+        </div>
+      </div>`;
+    grid.appendChild(card);
+    setTimeout(() => card.classList.add('visible'), 50 + i * 80);
+  });
+}
+
+function filterProducts(filter, btn) {
+  currentFilter = filter;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderProducts(filter);
+}
+
+// ── GALLERY ──
+function renderGallery() {
+  const g = document.getElementById('galleryGrid');
+  GALLERY_IMGS.forEach((item, i) => {
+    const el = document.createElement('div');
+    el.className = 'gallery-item';
+    el.innerHTML = `<img src="${item.src}" alt="${item.label}" loading="lazy">
+      <div class="gallery-item-overlay">${item.label}</div>`;
+    el.onclick = () => openLightbox(i);
+    g.appendChild(el);
+  });
+}
+
+// ── LIGHTBOX ──
+function openLightbox(idx) {
+  lbIndex = idx;
+  document.getElementById('lightbox-img').src = GALLERY_IMGS[idx].src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function openLightboxProduct(src) {
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox').classList.add('open');
+  document.body.style.overflow = 'hidden';
+  lbIndex = -1;
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+  document.body.style.overflow = '';
+}
+function lbNav(dir) {
+  if (lbIndex < 0) return;
+  lbIndex = (lbIndex + dir + GALLERY_IMGS.length) % GALLERY_IMGS.length;
+  document.getElementById('lightbox-img').src = GALLERY_IMGS[lbIndex].src;
+}
+document.getElementById('lightbox').addEventListener('click', function(e) {
+  if (e.target === this) closeLightbox();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeLightbox();
+  if (e.key === 'ArrowLeft') lbNav(-1);
+  if (e.key === 'ArrowRight') lbNav(1);
+});
+
+// ── TESTIMONIALS ──
+function renderTestimonials() {
+  const track = document.getElementById('testimonialsTrack');
+  const all = [...TESTIMONIALS, ...TESTIMONIALS]; // duplicate for infinite
+  all.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'testimonial-card';
+    const initials = t.name.split(' ').map(n => n[0]).join('');
+    card.innerHTML = `
+      <div class="testimonial-stars">${'★'.repeat(t.stars)}${'☆'.repeat(5-t.stars)}</div>
+      <div class="testimonial-text">"${t.text}"</div>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">${initials}</div>
+        <div><div class="testimonial-name">${t.name}</div><div class="testimonial-loc">📍 ${t.loc}</div></div>
+      </div>`;
+    track.appendChild(card);
+  });
+}
+
+// ── CART ──
+function addToCart(id) {
+  const p = PRODUCTS.find(x => x.id === id);
+  const existing = cart.find(x => x.id === id);
+  if (existing) { existing.qty++; }
+  else { cart.push({ ...p, qty: 1 }); }
+  updateCart();
+  showToast(`✅ "${p.name}" added to cart!`);
+  const countEl = document.getElementById('cartCount');
+  countEl.classList.remove('bump');
+  void countEl.offsetWidth;
+  countEl.classList.add('bump');
+}
+
+function updateCart() {
+  const total = cart.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('cartCount').textContent = total;
+  document.getElementById('cartItemCount').textContent = total;
+  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  document.getElementById('cartSubtotal').textContent = '₹' + subtotal.toLocaleString('en-IN');
+  renderCartItems();
+}
+
+function renderCartItems() {
+  const container = document.getElementById('cartItems');
+  if (cart.length === 0) {
+    container.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛋️</div><p>Your cart is empty.<br>Add some beautiful furniture!</p></div>`;
+    return;
+  }
+  container.innerHTML = cart.map(item => `
+    <div class="cart-item" id="ci-${item.id}">
+      <img class="cart-item-img" src="${item.img}" alt="${item.name}">
+      <div class="cart-item-details">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">₹${item.price.toLocaleString('en-IN')} each</div>
+        <div class="cart-item-controls">
+          <button class="qty-btn" onclick="changeQty(${item.id},-1)">−</button>
+          <span class="qty-val">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${item.id},1)">+</button>
+          <button class="remove-item" onclick="removeItem(${item.id})">✕ Remove</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function changeQty(id, delta) {
+  const item = cart.find(x => x.id === id);
+  if (!item) return;
+  item.qty += delta;
+  if (item.qty <= 0) removeItem(id);
+  else updateCart();
+}
+
+function removeItem(id) {
+  cart = cart.filter(x => x.id !== id);
+  updateCart();
+}
+
+function openCart() {
+  document.getElementById('cart-drawer').classList.add('open');
+  document.getElementById('cart-overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCart() {
+  document.getElementById('cart-drawer').classList.remove('open');
+  document.getElementById('cart-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function checkoutWhatsApp() {
+  if (cart.length === 0) { showToast('⚠️ Your cart is empty!'); return; }
+  const lines = cart.map(i => `• ${i.name} (x${i.qty}) — ₹${(i.price * i.qty).toLocaleString('en-IN')}`).join('\n');
+  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
+  const msg = `Hi! I'd like to order:\n\n${lines}\n\n*Total: ₹${total.toLocaleString('en-IN')}*\n\nPlease confirm availability and delivery details. Thank you!`;
+  window.open(`https://wa.me/${WA_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
+}
+
+// ── WISHLIST ──
+function toggleWish(btn) {
+  btn.classList.toggle('active');
+  btn.textContent = btn.classList.contains('active') ? '♥' : '♡';
+}
+
+// ── TOAST ──
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ── STATS COUNTER ──
+function animateStats() {
+  document.querySelectorAll('[data-target]').forEach(el => {
+    const target = +el.dataset.target;
+    const suffix = target >= 1000 ? '+' : '+';
+    let current = 0;
+    const step = target / 50;
+    const timer = setInterval(() => {
+      current = Math.min(current + step, target);
+      el.textContent = Math.floor(current).toLocaleString('en-IN') + suffix;
+      if (current >= target) clearInterval(timer);
+    }, 30);
+  });
+}
+
+// ── INTERSECTION OBSERVER ──
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      if (e.target.closest('.stats-strip')) animateStats();
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.fade-up, .why-card').forEach(el => observer.observe(el));
+document.querySelectorAll('.stats-strip .stat-num').forEach(el => observer.observe(el));
+
+// ── INIT ──
+renderProducts('all');
+renderGallery();
+renderTestimonials();
+
+// Observe product cards after render
+setTimeout(() => {
+  document.querySelectorAll('.product-card').forEach(el => observer.observe(el));
+  document.querySelectorAll('.why-card').forEach(el => observer.observe(el));
+}, 100);
+</script>
+</body>
+</html>
