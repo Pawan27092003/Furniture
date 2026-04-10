@@ -923,7 +923,6 @@
 
 <!-- TOAST -->
 <div id="toast">✅ Added to cart!</div>
-
 <script>
 // ── DATA ──
 const WA_NUM = '918800619500';
@@ -935,7 +934,7 @@ const PRODUCTS = [
   { id:4, name:'Milano L-Shaped Sofa', category:'sofa', price:42000, oldPrice:58000, img:'https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=600&q=80', badge:'Sale' },
   { id:5, name:'Executive Wardrobe', category:'wardrobe', price:19500, oldPrice:26000, img:'https://images.unsplash.com/photo-1558997519-83ea9252edf8?w=600&q=80', badge:'' },
   { id:6, name:'Office Ergonomic Desk', category:'office', price:11999, oldPrice:16000, img:'https://images.unsplash.com/photo-1518455027359-f3f8164ba6bd?w=600&q=80', badge:'New' },
-  { id:7, name:'Bunk Bed Kids Set', category:'bed', price:17500, oldPrice:23000, img:, badge:'' },
+  { id:7, name:'Bunk Bed Kids Set', category:'bed', price:17500, oldPrice:23000, img:'https://images.unsplash.com/photo-1522083165962-f3dbf63e914c?w=600&q=80', badge:'' },
   { id:8, name:'6-Chair Dining Set', category:'dining', price:52000, oldPrice:70000, img:'https://images.unsplash.com/photo-1604578762246-41134e37f9cc?w=600&q=80', badge:'Sale' },
 ];
 
@@ -966,6 +965,11 @@ let currentFilter = 'all';
 // ── LOADER ──
 window.addEventListener('load', () => {
   setTimeout(() => document.getElementById('loader').classList.add('hidden'), 1200);
+  renderProducts('all');
+  renderGallery();
+  renderTestimonials();
+  renderStats();
+  setupIntersectionObserver();
 });
 
 // ── NAV SCROLL ──
@@ -977,7 +981,8 @@ window.addEventListener('scroll', () => {
 function toggleMobile() {
   const h = document.getElementById('hamburger');
   const m = document.getElementById('mobileMenu');
-  h.classList.toggle('open'); m.classList.toggle('open');
+  h.classList.toggle('open');
+  m.classList.toggle('open');
 }
 function closeMobile() {
   document.getElementById('hamburger').classList.remove('open');
@@ -989,6 +994,7 @@ function renderProducts(filter) {
   const grid = document.getElementById('productsGrid');
   grid.innerHTML = '';
   const list = filter === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.category === filter);
+  currentFilter = filter;
   list.forEach((p, i) => {
     const save = Math.round((1 - p.price / p.oldPrice) * 100);
     const card = document.createElement('div');
@@ -998,225 +1004,272 @@ function renderProducts(filter) {
       <div class="product-img-wrap" onclick="openLightboxProduct('${p.img}')">
         <img src="${p.img}" alt="${p.name}" loading="lazy">
         ${p.badge ? `<div class="product-badge">${p.badge}</div>` : ''}
-        <div class="product-overlay"><button class="quick-view-btn">Quick View</button></div>
+        <div class="product-overlay">
+          <button class="quick-view-btn" onclick="addToCart(${p.id}, event)">Quick Add</button>
+        </div>
       </div>
       <div class="product-info">
         <div class="product-category">${p.category}</div>
         <div class="product-name">${p.name}</div>
         <div class="product-price">
-          <span class="price-now">₹${p.price.toLocaleString('en-IN')}</span>
-          <span class="price-old">₹${p.oldPrice.toLocaleString('en-IN')}</span>
-          <span class="price-save">Save ${save}%</span>
+          <span class="price-now">₹${p.price.toLocaleString()}</span>
+          <span class="price-old">₹${p.oldPrice.toLocaleString()}</span>
+          <span class="price-save">${save}% OFF</span>
         </div>
         <div class="product-actions">
-          <button class="add-cart-btn" onclick="addToCart(${p.id})">🛒 Add to Cart</button>
-          <button class="wish-btn" onclick="toggleWish(this)" aria-label="Wishlist">♡</button>
+          <button class="add-cart-btn" onclick="addToCart(${p.id}, event)">🛒 Add</button>
+          <button class="wish-btn" onclick="toggleWish(this)">🤍</button>
         </div>
-      </div>`;
+      </div>
+    `;
     grid.appendChild(card);
-    setTimeout(() => card.classList.add('visible'), 50 + i * 80);
+    setTimeout(() => card.classList.add('visible'), 50);
   });
 }
 
-function filterProducts(filter, btn) {
-  currentFilter = filter;
+function filterProducts(category, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  renderProducts(filter);
+  renderProducts(category);
 }
 
-// ── GALLERY ──
+// ── RENDER GALLERY ──
 function renderGallery() {
-  const g = document.getElementById('galleryGrid');
-  GALLERY_IMGS.forEach((item, i) => {
-    const el = document.createElement('div');
-    el.className = 'gallery-item';
-    el.innerHTML = `<img src="${item.src}" alt="${item.label}" loading="lazy">
-      <div class="gallery-item-overlay">${item.label}</div>`;
-    el.onclick = () => openLightbox(i);
-    g.appendChild(el);
+  const grid = document.getElementById('galleryGrid');
+  grid.innerHTML = '';
+  GALLERY_IMGS.forEach(img => {
+    const item = document.createElement('div');
+    item.className = 'gallery-item';
+    item.innerHTML = `
+      <img src="${img.src}" alt="${img.label}" onclick="openLightbox(this.src)">
+      <div class="gallery-item-overlay">
+        <span>${img.label}</span>
+      </div>
+    `;
+    grid.appendChild(item);
   });
 }
 
-// ── LIGHTBOX ──
-function openLightbox(idx) {
-  lbIndex = idx;
-  document.getElementById('lightbox-img').src = GALLERY_IMGS[idx].src;
-  document.getElementById('lightbox').classList.add('open');
-  document.body.style.overflow = 'hidden';
-}
-function openLightboxProduct(src) {
-  document.getElementById('lightbox-img').src = src;
-  document.getElementById('lightbox').classList.add('open');
-  document.body.style.overflow = 'hidden';
-  lbIndex = -1;
-}
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
-  document.body.style.overflow = '';
-}
-function lbNav(dir) {
-  if (lbIndex < 0) return;
-  lbIndex = (lbIndex + dir + GALLERY_IMGS.length) % GALLERY_IMGS.length;
-  document.getElementById('lightbox-img').src = GALLERY_IMGS[lbIndex].src;
-}
-document.getElementById('lightbox').addEventListener('click', function(e) {
-  if (e.target === this) closeLightbox();
-});
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') closeLightbox();
-  if (e.key === 'ArrowLeft') lbNav(-1);
-  if (e.key === 'ArrowRight') lbNav(1);
-});
-
-// ── TESTIMONIALS ──
+// ── RENDER TESTIMONIALS ──
 function renderTestimonials() {
   const track = document.getElementById('testimonialsTrack');
-  const all = [...TESTIMONIALS, ...TESTIMONIALS]; // duplicate for infinite
-  all.forEach(t => {
+  track.innerHTML = '';
+  TESTIMONIALS.forEach(t => {
     const card = document.createElement('div');
     card.className = 'testimonial-card';
     const initials = t.name.split(' ').map(n => n[0]).join('');
     card.innerHTML = `
-      <div class="testimonial-stars">${'★'.repeat(t.stars)}${'☆'.repeat(5-t.stars)}</div>
+      <div class="testimonial-stars">${'⭐'.repeat(t.stars)}</div>
       <div class="testimonial-text">"${t.text}"</div>
       <div class="testimonial-author">
         <div class="testimonial-avatar">${initials}</div>
-        <div><div class="testimonial-name">${t.name}</div><div class="testimonial-loc">📍 ${t.loc}</div></div>
-      </div>`;
+        <div>
+          <div class="testimonial-name">${t.name}</div>
+          <div class="testimonial-loc">${t.loc}</div>
+        </div>
+      </div>
+    `;
+    track.appendChild(card);
+  });
+  // Duplicate for infinite scroll effect
+  TESTIMONIALS.forEach(t => {
+    const card = document.createElement('div');
+    card.className = 'testimonial-card';
+    const initials = t.name.split(' ').map(n => n[0]).join('');
+    card.innerHTML = `
+      <div class="testimonial-stars">${'⭐'.repeat(t.stars)}</div>
+      <div class="testimonial-text">"${t.text}"</div>
+      <div class="testimonial-author">
+        <div class="testimonial-avatar">${initials}</div>
+        <div>
+          <div class="testimonial-name">${t.name}</div>
+          <div class="testimonial-loc">${t.loc}</div>
+        </div>
+      </div>
+    `;
     track.appendChild(card);
   });
 }
 
-// ── CART ──
-function addToCart(id) {
-  const p = PRODUCTS.find(x => x.id === id);
-  const existing = cart.find(x => x.id === id);
-  if (existing) { existing.qty++; }
-  else { cart.push({ ...p, qty: 1 }); }
+// ── RENDER STATS ──
+function renderStats() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting && !entry.target.classList.contains('animated')) {
+        entry.target.classList.add('animated');
+        const target = parseInt(entry.target.dataset.target);
+        let current = 0;
+        const increment = target / 50;
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            entry.target.textContent = target.toLocaleString();
+            clearInterval(timer);
+          } else {
+            entry.target.textContent = Math.floor(current).toLocaleString();
+          }
+        }, 30);
+      }
+    });
+  }, { threshold: 0.5 });
+  document.querySelectorAll('.stat-num').forEach(el => observer.observe(el));
+}
+
+// ── INTERSECTION OBSERVER FOR FADE-UP ──
+function setupIntersectionObserver() {
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-up, .why-card').forEach(el => {
+    el.classList.add('fade-up');
+    observer.observe(el);
+  });
+}
+
+// ── CART MANAGEMENT ──
+function addToCart(productId, e) {
+  e.preventDefault();
+  const product = PRODUCTS.find(p => p.id === productId);
+  const existing = cart.find(c => c.id === productId);
+  if (existing) {
+    existing.qty++;
+  } else {
+    cart.push({ ...product, qty: 1 });
+  }
   updateCart();
-  showToast(`✅ "${p.name}" added to cart!`);
-  const countEl = document.getElementById('cartCount');
-  countEl.classList.remove('bump');
-  void countEl.offsetWidth;
-  countEl.classList.add('bump');
+  showToast('✅ Added to cart!');
+  document.getElementById('cartCount').classList.add('bump');
+  setTimeout(() => document.getElementById('cartCount').classList.remove('bump'), 300);
 }
 
 function updateCart() {
-  const total = cart.reduce((s, i) => s + i.qty, 0);
-  document.getElementById('cartCount').textContent = total;
-  document.getElementById('cartItemCount').textContent = total;
-  const subtotal = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  document.getElementById('cartSubtotal').textContent = '₹' + subtotal.toLocaleString('en-IN');
-  renderCartItems();
-}
-
-function renderCartItems() {
-  const container = document.getElementById('cartItems');
+  const count = cart.reduce((sum, item) => sum + item.qty, 0);
+  document.getElementById('cartCount').textContent = count;
+  document.getElementById('cartItemCount').textContent = count;
+  
+  const cartItems = document.getElementById('cartItems');
   if (cart.length === 0) {
-    container.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛋️</div><p>Your cart is empty.<br>Add some beautiful furniture!</p></div>`;
-    return;
-  }
-  container.innerHTML = cart.map(item => `
-    <div class="cart-item" id="ci-${item.id}">
-      <img class="cart-item-img" src="${item.img}" alt="${item.name}">
-      <div class="cart-item-details">
-        <div class="cart-item-name">${item.name}</div>
-        <div class="cart-item-price">₹${item.price.toLocaleString('en-IN')} each</div>
-        <div class="cart-item-controls">
-          <button class="qty-btn" onclick="changeQty(${item.id},-1)">−</button>
-          <span class="qty-val">${item.qty}</span>
-          <button class="qty-btn" onclick="changeQty(${item.id},1)">+</button>
-          <button class="remove-item" onclick="removeItem(${item.id})">✕ Remove</button>
+    cartItems.innerHTML = `
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🛋️</div>
+        <p>Your cart is empty.<br>Add some beautiful furniture!</p>
+      </div>
+    `;
+  } else {
+    cartItems.innerHTML = cart.map((item, i) => `
+      <div class="cart-item">
+        <img src="${item.img}" alt="${item.name}" class="cart-item-img">
+        <div class="cart-item-details">
+          <div class="cart-item-name">${item.name}</div>
+          <div class="cart-item-price">₹${item.price.toLocaleString()}</div>
+          <div class="cart-item-controls">
+            <button class="qty-btn" onclick="updateQty(${i}, -1)">−</button>
+            <span class="qty-val">${item.qty}</span>
+            <button class="qty-btn" onclick="updateQty(${i}, 1)">+</button>
+            <button class="remove-item" onclick="removeItem(${i})">Remove</button>
+          </div>
         </div>
       </div>
-    </div>`).join('');
+    `).join('');
+  }
+  updateSubtotal();
 }
 
-function changeQty(id, delta) {
-  const item = cart.find(x => x.id === id);
-  if (!item) return;
-  item.qty += delta;
-  if (item.qty <= 0) removeItem(id);
+function updateQty(index, change) {
+  cart[index].qty += change;
+  if (cart[index].qty <= 0) removeItem(index);
   else updateCart();
 }
 
-function removeItem(id) {
-  cart = cart.filter(x => x.id !== id);
+function removeItem(index) {
+  cart.splice(index, 1);
   updateCart();
 }
 
-function openCart() {
-  document.getElementById('cart-drawer').classList.add('open');
-  document.getElementById('cart-overlay').classList.add('open');
-  document.body.style.overflow = 'hidden';
+function updateSubtotal() {
+  const subtotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  document.getElementById('cartSubtotal').textContent = '₹' + subtotal.toLocaleString();
 }
+
+function openCart() {
+  document.getElementById('cart-overlay').classList.add('open');
+  document.getElementById('cart-drawer').classList.add('open');
+}
+
 function closeCart() {
-  document.getElementById('cart-drawer').classList.remove('open');
   document.getElementById('cart-overlay').classList.remove('open');
-  document.body.style.overflow = '';
+  document.getElementById('cart-drawer').classList.remove('open');
 }
 
 function checkoutWhatsApp() {
-  if (cart.length === 0) { showToast('⚠️ Your cart is empty!'); return; }
-  const lines = cart.map(i => `• ${i.name} (x${i.qty}) — ₹${(i.price * i.qty).toLocaleString('en-IN')}`).join('\n');
-  const total = cart.reduce((s, i) => s + i.price * i.qty, 0);
-  const msg = `Hi! I'd like to order:\n\n${lines}\n\n*Total: ₹${total.toLocaleString('en-IN')}*\n\nPlease confirm availability and delivery details. Thank you!`;
-  window.open(`https://wa.me/${WA_NUM}?text=${encodeURIComponent(msg)}`, '_blank');
+  if (cart.length === 0) {
+    showToast('❌ Cart is empty');
+    return;
+  }
+  const items = cart.map(c => `${c.name} (x${c.qty})`).join('%0A');
+  const total = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+  const msg = `Hello! I'd like to order:%0A${items}%0A%0ATotal: ₹${total}`;
+  window.open(`https://wa.me/${WA_NUM}?text=${msg}`, '_blank');
+  closeCart();
 }
 
-// ── WISHLIST ──
+// ── LIGHTBOX ──
+function openLightbox(src) {
+  lbIndex = GALLERY_IMGS.findIndex(img => img.src === src);
+  updateLightbox();
+}
+
+function openLightboxProduct(src) {
+  const productImages = PRODUCTS.map(p => p.img);
+  lbIndex = productImages.indexOf(src);
+  if (lbIndex === -1) lbIndex = 0;
+  document.getElementById('lightbox-img').src = productImages[lbIndex];
+  document.getElementById('lightbox').classList.add('open');
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('open');
+}
+
+function lbNav(direction) {
+  const images = GALLERY_IMGS.map(i => i.src);
+  lbIndex = (lbIndex + direction + images.length) % images.length;
+  updateLightbox();
+}
+
+function updateLightbox() {
+  const images = GALLERY_IMGS.map(i => i.src);
+  document.getElementById('lightbox-img').src = images[lbIndex];
+  document.getElementById('lightbox').classList.add('open');
+}
+
+// ── WISH LIST ──
 function toggleWish(btn) {
   btn.classList.toggle('active');
-  btn.textContent = btn.classList.contains('active') ? '♥' : '♡';
+  showToast(btn.classList.contains('active') ? '❤️ Added to wishlist' : '💔 Removed from wishlist');
 }
 
 // ── TOAST ──
 function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
-// ── STATS COUNTER ──
-function animateStats() {
-  document.querySelectorAll('[data-target]').forEach(el => {
-    const target = +el.dataset.target;
-    const suffix = target >= 1000 ? '+' : '+';
-    let current = 0;
-    const step = target / 50;
-    const timer = setInterval(() => {
-      current = Math.min(current + step, target);
-      el.textContent = Math.floor(current).toLocaleString('en-IN') + suffix;
-      if (current >= target) clearInterval(timer);
-    }, 30);
-  });
-}
-
-// ── INTERSECTION OBSERVER ──
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if (e.isIntersecting) {
-      e.target.classList.add('visible');
-      if (e.target.closest('.stats-strip')) animateStats();
-    }
-  });
-}, { threshold: 0.15 });
-
-document.querySelectorAll('.fade-up, .why-card').forEach(el => observer.observe(el));
-document.querySelectorAll('.stats-strip .stat-num').forEach(el => observer.observe(el));
-
-// ── INIT ──
-renderProducts('all');
-renderGallery();
-renderTestimonials();
-
-// Observe product cards after render
-setTimeout(() => {
-  document.querySelectorAll('.product-card').forEach(el => observer.observe(el));
-  document.querySelectorAll('.why-card').forEach(el => observer.observe(el));
-}, 100);
+// ── CLOSE MODALS ON ESC ──
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    closeLightbox();
+    closeCart();
+    closeMobile();
+  }
+});
 </script>
 </body>
 </html>
